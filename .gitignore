@@ -1,0 +1,8 @@
+node_modules
+.wrangler
+.dev.vars
+dist
+.DS_Store
+
+# private Dusk Research newsletter-collector deploy config (not part of the product)
+wrangler.duskforms.jsonc

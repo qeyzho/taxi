@@ -1,0 +1,45 @@
+{
+  // Worker config. JSONC (JSON + comments) is what Cloudflare's one-click deploy
+  // reliably writes the auto-created database ID back into.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "taxi",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-06-01",
+  "observability": { "enabled": true },
+  "workers_dev": true,
+
+  // The database. We deliberately DON'T hardcode a database_id here: the
+  // "Deploy to Cloudflare" button provisions a fresh D1 for whoever clicks it and
+  // fills this in automatically. Locally, wrangler simulates it by name.
+  // (Maintainer note: to redeploy your own live instance via the CLI, temporarily
+  // add your database_id back to this block.)
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "taxi-db",
+      "database_id": "5e856610-2677-4ea9-8e0b-04291a6f6e67"
+    }
+  ],
+
+  // Email Service (send) binding. Lets the Worker email you when a submission
+  // lands, and (on the Workers Paid plan) send autoresponders from your domain.
+  // Sending to your own verified address is free on any plan; nothing to
+  // configure to deploy — the app guides you through verifying it on first run.
+  "send_email": [{ "name": "EMAIL" }],
+
+  // Maintainer note (Dusk Research's own formweh.com instance): these attach the
+  // marketing domain. Anyone self-hosting should REMOVE this routes block and use
+  // their own forms.<domain> custom domain instead — a routes array is the
+  // authoritative custom-domain list for the Worker.
+  "routes": [
+    { "pattern": "formweh.com", "custom_domain": true },
+    { "pattern": "www.formweh.com", "custom_domain": true },
+    { "pattern": "forms.formweh.com", "custom_domain": true }
+  ]
+
+  // Custom domain (for later): point forms.yourdomain.com at this Worker by adding
+  // it as a Custom Domain in the Cloudflare dashboard (Workers > your worker >
+  // Settings > Domains & Routes > Add > Custom Domain). Cloudflare provisions DNS
+  // and SSL. If your apex isn't on Cloudflare, add just the `forms` subdomain to a
+  // Cloudflare zone, or CNAME it to the worker via Cloudflare for SaaS.
+}
